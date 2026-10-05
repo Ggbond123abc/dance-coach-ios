@@ -3,24 +3,25 @@ import AVFoundation
 
 /// 拍点提示音：预生成两段短促的正弦衰减，丢给 AVAudioPlayerNode 播。
 /// 比调系统音可控 —— 能分强拍/弱拍，也不受静音键影响。
+///
+/// 任何一步失败都只是「没声音」，不影响其它功能，所以全程静默降级。
 final class ClickPlayer {
     private let engine = AVAudioEngine()
     private let node = AVAudioPlayerNode()
-    private let format: AVAudioFormat
     private var strongBuf: AVAudioPCMBuffer?
     private var weakBuf: AVAudioPCMBuffer?
     private var started = false
 
     init() {
-        format = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1)
-            ?? AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1)!
-        strongBuf = ClickPlayer.makeBuffer(format: format, freq: 1500, dur: 0.085, gain: 0.30)
-        weakBuf = ClickPlayer.makeBuffer(format: format, freq: 950, dur: 0.045, gain: 0.22)
+        guard let fmt = AVAudioFormat(standardFormatWithSampleRate: 44100, channels: 1) else { return }
+        strongBuf = ClickPlayer.makeBuffer(format: fmt, freq: 1500, dur: 0.085, gain: 0.30)
+        weakBuf = ClickPlayer.makeBuffer(format: fmt, freq: 950, dur: 0.045, gain: 0.22)
         engine.attach(node)
-        engine.connect(node, to: engine.mainMixerNode, format: format)
+        engine.connect(node, to: engine.mainMixerNode, format: fmt)
     }
 
     func start() {
+        guard strongBuf != nil else { return }
         if started {
             if !node.isPlaying { node.play() }
             return
@@ -32,7 +33,7 @@ final class ClickPlayer {
             node.play()
             started = true
         } catch {
-            // 出不了声不影响其它功能，静默失败
+            started = false
         }
     }
 

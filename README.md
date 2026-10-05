@@ -30,86 +30,201 @@ git push  ───────────────────▶   自动�
 
 - **不需要** 99 美元的开发者账号
 - **不需要** Mac
-- 仓库设置成 **Public**（公开）就行 —— 公开仓库的 macOS 构建时长完全免费
+- 仓库设置成 **Public**（公开）就行 —— 公开仓库用标准托管运行器**完全免费**
+  （[GitHub 官方计费文档](https://docs.github.com/zh/billing/concepts/product-billing/github-actions)：*usage is free for public repositories that use standard GitHub-hosted runners*）
+
+### 开工前：你这台电脑现在的状态
+
+我检查过了，结论是**只差三个软件，都能一条命令装好**：
+
+| 东西 | 状态 |
+|---|---|
+| `git 2.56.0` | ✅ 已装 |
+| 项目代码 | ✅ 已提交（分支 `main`，还没有远程仓库） |
+| `winget v1.29` | ✅ 已装 → 所以下面能用命令一键装软件 |
+| iTunes / iPhone 驱动 | ❌ 没装（第四节装） |
+| Sideloadly | ❌ 没装（第四节装） |
+| 手机 | ❓ 需要你准备一根能传数据的线 |
+
+按顺序做完 **二 → 三 → 四** 就能在手机上用上了。全程大概 30~40 分钟，
+其中大部分时间是等编译和等下载。
 
 ---
 
-## 二、把代码推到 GitHub（一次性）
+## 二、把代码推到 GitHub（一次性，约 5 分钟）
 
-仓库已经在本地提交好了，你只要：
+### 2.1 先注册 / 登录 GitHub
+
+打开 https://github.com ，没账号就点 **Sign up** 注册（免费，邮箱 + 密码即可）。
+已经有账号就登录。
+
+### 2.2 建一个空仓库
 
 1. 打开 https://github.com/new
-   - Repository name 填 `dance-coach-ios`
-   - 选 **Public**
-   - **不要**勾选 "Add a README file"
-   - 点 Create repository
-2. 在 `C:\Users\A\Desktop\Agent\dance-coach-ios` 文件夹里，右键 → 「在终端中打开」（或 `Git Bash Here`），粘贴下面这段。
-   把 `你的用户名` 换成你的 GitHub 用户名：
+2. **Repository name** 填：`dance-coach-ios`
+3. 下面选 **Public** ← 这一步很关键，选 Private 会消耗付费额度
+4. **不要**勾 "Add a README file"，其它都别动
+5. 点绿色按钮 **Create repository**
+6. 建好后网页会显示一堆命令，**先别管它**，往下看
 
-```bash
+### 2.3 记住你的用户名
+
+网页右上角头像旁边就是。比如你的主页是 `https://github.com/zhangsan`，
+那用户名就是 `zhangsan`。下面命令里的 `你的用户名` 换成它。
+
+### 2.4 在这个文件夹里打开终端
+
+1. 打开文件夹 `C:\Users\A\Desktop\Agent\dance-coach-ios`
+2. 在**地址栏**（显示路径的那一条）里点一下，把内容全删掉
+3. 输入 `powershell` 然后按回车
+
+会弹出一个蓝色/黑色窗口，路径就停在这个文件夹。
+
+### 2.5 粘贴这三条命令
+
+一条一条粘贴，每条按回车。**第一条里的 `你的用户名` 要换成你自己的**：
+
+```powershell
 git remote add origin https://github.com/你的用户名/dance-coach-ios.git
 git branch -M main
 git push -u origin main
 ```
 
-第一次推送会让你登录 GitHub，按提示在浏览器里授权即可。
+> ⚠️ 你电脑上的 git 全局身份现在是占位的「你的名字 / 你的邮箱」。
+> 想改成自己的，先跑这两条（换成你的名字和邮箱）：
+> ```powershell
+> git config user.name "你的名字"
+> git config user.email "你的邮箱"
+> ```
+> 不改也能推上去，只是提交记录里显示的是占位名。
+
+### 2.6 第一次推送会弹登录窗口
+
+- 会跳出一个浏览器窗口让你授权 GitHub，点 **Continue / Authorize**
+- 可能要求你**验证邮箱**：去邮箱点一下 GitHub 发来的确认链接，回来再推一次
+- 推成功的标志是最后一句类似：
+  ```
+  * [new branch]      main -> main
+  branch 'main' set up to track 'origin/main'.
+  ```
+
+<details>
+<summary>如果报错 <code>remote origin already exists</code></summary>
+
+说明之前加过了，改成：
+```powershell
+git remote set-url origin https://github.com/你的用户名/dance-coach-ios.git
+git push -u origin main
+```
+</details>
 
 ---
 
 ## 三、等它在云端编译（3~8 分钟）
 
-推送成功后：
+### 3.1 看进度
 
-1. 打开 `https://github.com/你的用户名/dance-coach-ios/actions`
-2. 会看到一个叫 **Build unsigned IPA** 的任务在转圈
-3. 绿勾 = 成功（大约 3~8 分钟）；红叉 = 失败，见第八节
+推送完，打开：
 
-成功后：
+```
+https://github.com/你的用户名/dance-coach-ios/actions
+```
 
-1. 点进那次运行
-2. 页面底部 **Artifacts** 区域，点 **DanceCoach-unsigned-ipa** 下载
-3. 得到的是一个 zip，解压出 `DanceCoach.ipa`
+- 会看到一条叫 **原生 iOS 版街舞拆解 App** 的记录，旁边一个**黄点**在转 = 正在编译
+- 点进去，左边有一项 **build**，再点开看实时日志
+- **绿勾 ✅** = 成功（通常 3~8 分钟）
+- **红叉 ❌** = 失败 → 跳到第十四节，把报错发给我
+
+第一次编译会 `brew install xcodegen`（装一个工具），所以会花得久一点。
+
+### 3.2 下载 ipa
+
+编译成功后，在同一次运行的页面里：
+
+1. 往下拉到 **Artifacts** 区域
+2. 点 **DanceCoach-unsigned-ipa** 下载
+3. 得到 `DanceCoach-unsigned-ipa.zip`
+4. 解压，里面是 **`DanceCoach.ipa`** ← 这就是要装的东西
+
+> 建议解压到桌面，等下 Sideloadly 要用这个文件。
+> Artifact 默认保留 30 天，过期了重新跑一次构建就有（网页上点 **Re-run all jobs**）。
+
+### 3.3 以后改了代码，怎么重新装
+
+如果哪天你让我改了 App 的代码（或者你自己动手改），更新流程就是：
+
+1. 在 `dance-coach-ios` 文件夹里开 PowerShell，跑：
+   ```powershell
+   git add -A
+   git commit -m "改了点什么"
+   git push
+   ```
+2. GitHub 会自动重新编译（不用你点任何东西）
+3. 编译好之后**重新下载 ipa**，再用 Sideloadly 装一次覆盖掉旧的
+
+> 注意：Sideloadly 装的时候会**覆盖**同名 App。App 里的数据（导入的视频）不会保留，
+> 反正视频每次重新选就行。
 
 ---
 
 ## 四、装到 iPhone 上（Windows + 免费 Apple ID）
 
-### 4.1 先装两样东西
+### 4.1 装三个软件（一条命令一个，约 10 分钟）
 
-1. **iTunes** —— 必须从苹果官网下载，**不要**用 Microsoft Store 版本
-   https://www.apple.com/itunes/download/win64
-   （装完它会自动带上 iPhone 驱动 "Apple Mobile Device Support"，Sideloadly 需要它）
-2. **Sideloadly** —— https://sideloadly.io/ 下载 Windows 版并安装
+你的电脑上**现在这三样都没装**（我检查过了）。好消息是都有 `winget`，不用去网站上找：
+
+在开始菜单搜 **PowerShell**，**右键 → 以管理员身份运行**（要管理员，否则装不上驱动），
+然后一条一条粘：
+
+```powershell
+winget install --id Apple.AppleMobileDeviceSupport -e --accept-package-agreements --accept-source-agreements
+winget install --id Apple.iTunes -e --accept-package-agreements --accept-source-agreements
+winget install --id iOSGods.Sideloadly -e --accept-package-agreements --accept-source-agreements
+```
+
+| 装的是 | 干什么用的 |
+|---|---|
+| **Apple Mobile Device Support** | iPhone 驱动。**Sideloadly 必需**，缺了会连不上手机 |
+| **iTunes** | 提供苹果的签名组件（anisette）。这个 winget 装的是**苹果官网桌面版**，不是微软商店版，能正常用 |
+| **Sideloadly** | 真正签名 + 装 App 的工具 |
+
+> ⚠️ 如果你自己跑去下了**微软商店版 iTunes**，Sideloadly 会连不上手机。
+> 必须用上面这条命令（或在 apple.com 下 win64 版）。
+
+装完**重启一次电脑**，让驱动生效。
 
 ### 4.2 手机上的准备
 
-- 设置 → 通用 → 关于本机 → 记住「名称」（比如 `张三的 iPhone`）
-- 用数据线连到电脑，手机上点「信任此电脑」
+1. 用数据线把 iPhone 连到电脑（要能传数据的线，纯充电线不行）
+2. 手机上会弹「要信任此电脑吗？」→ 点 **信任** → 输入锁屏密码
+3. 如果没弹：拔掉重插，或设置 → 通用 → 传输或还原 iPhone → 还原 → 还原位置与隐私
+4. 设置 → 通用 → 关于本机，记住「名称」（比如 `张三的 iPhone`）
 
 ### 4.3 用 Sideloadly 装
 
-1. 打开 Sideloadly
+1. 打开 **Sideloadly**（会弹一个小窗口）
 2. **IPA 那一栏**：把解压出来的 `DanceCoach.ipa` 拖进去
-3. **Apple ID 那一栏**：填你的 Apple ID（用免费的普通账号就行，不用开发者账号）
-4. 手机上选你的设备，点 **Start**
-5. 会弹窗要 Apple ID 密码 —— 这是在**本机**直接跟苹果服务器换签名证书，密码不经过 GitHub
-6. 等进度条走完，出现 `Done` 就好了
-
-> 如果 Sideloadly 报 `Invalid anisette data` 之类的错：把 iTunes 打开、让手机连上 iTunes 认证一次，再重试。
+3. 上面的设备下拉框里应该出现你的 iPhone（没出现就是驱动/信任的问题，看 4.1、4.2）
+4. **Apple ID 那一栏**：填你的 Apple ID（普通免费账号就行，不用开发者账号）
+5. 点 **Start**
+6. 会弹出输入 Apple ID 密码 —— 这是在你**本机**直接和苹果服务器换签名证书，
+   密码不会经过 GitHub，也不会经过我
+7. 进度条走完，出现 `Done` 就好
 
 ### 4.4 手机上信任它（**必须做，不然点开就闪退**）
 
 1. 设置 → 通用 → **VPN 与设备管理** → 开发者 App → 点你的 Apple ID → **信任**
-2. iOS 16 及以上：设置 → 隐私与安全性 → 拉到底 → **开发者模式** → 打开 → 重启手机 → 确认
-3. 现在回到桌面，点开「街舞拆解」
+2. iOS 16 及以上：设置 → 隐私与安全性 → 拉到最底 → **开发者模式** → 打开 → 重启手机 → 重启后点确认
+3. 回到桌面，点开「**街舞拆解**」
 
 ### 4.5 七天之后
 
-免费 Apple ID 签出来的证书**只有 7 天有效期**，第 8 天点开会提示"无法验证 App"。
-重装一次就行（重复 4.3 和 4.4，不用重下 ipa，文件还在电脑上）。
+免费 Apple ID 签出来的证书**只有 7 天有效期**，第 8 天点开会提示「无法验证 App」。
+**重装一次就行**：重复 4.3 + 4.4 两步（`DanceCoach.ipa` 还在电脑上，不用重新编译）。
 
-嫌麻烦可以用 **AltStore**（https://altstore.io/），它在你电脑上跑一个 AltServer，
-手机连同一个 Wi-Fi 就能后台自动续签。免费账号同时最多只能装 3 个自签 App。
+嫌每周手动重装麻烦，可以上 **AltStore**（https://altstore.io/）：
+它在你电脑上跑一个小服务，手机连同一个 Wi-Fi 就自动续签。
+免费账号同时最多只能装 3 个自签 App。
 
 ---
 
@@ -174,7 +289,9 @@ git push -u origin main
 
 ---
 
-## 八、第一次编译失败怎么办
+## 八、卡住了怎么办
+
+### 8.1 编译失败（红叉）
 
 代码是照着一套已验证的算法重写过来的（原型见 `..\dance-coach\index.html`），
 但这个 iOS 工程**还没在真机上编译过**（本机没有 macOS / Swift 工具链）。
@@ -185,9 +302,24 @@ git push -u origin main
 1. 打开失败的那次 Actions 运行
 2. 点左边红色的 **build**
 3. 展开 **编译（不签名）** 这一步
-4. 从右下往上找第一行 `error:` 开头的，把它**连同上面 10 行、下面 5 行**一起复制给我
+4. 从下往上找第一行 `error:` 开头的，把它**连同上面 10 行、下面 5 行**一起复制给我
 
 有它我就能直接定位并改好，你再 push 一次即可。
+
+### 8.2 其它常见问题
+
+| 症状 | 原因 / 怎么办 |
+|---|---|
+| `git push` 报 `Authentication failed` | 需要先在 GitHub 网页登录，并去邮箱点验证链接 |
+| `git push` 报 `remote origin already exists` | 改成 `git remote set-url origin <网址>` 再推 |
+| Actions 页面啥也没有 | 确认推的是 `main` 分支，且仓库是 **Public** |
+| Sideloadly 里看不到手机 | ① 没装 Apple Mobile Device Support ② 手机上没点「信任」③ 换根数据线 ④ 重启电脑 |
+| Sideloadly 报 `Invalid anisette` | 打开一次 iTunes，让手机连上 iTunes 认证，再回 Sideloadly 重试 |
+| Sideloadly 报 `Provision.cpp:81` / 证书已满 | 免费账号最多同时 3 个自签 App，去设置里删掉旧的 |
+| 装好了但点开闪退 | 没做 4.4 的「信任」或「开发者模式」 |
+| 第 8 天提示「无法验证 App」 | 证书过期了，重做 4.3 + 4.4 |
+| App 里分析卡在 0% | 别切走 App、别锁屏，iOS 会停掉后台画面处理 |
+| 分析完没有骨架 | 视频里人太小 / 太黑 / 动作太快拖影，换一段重拍 |
 
 ---
 

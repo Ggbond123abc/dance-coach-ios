@@ -84,17 +84,6 @@ enum SkeletonDraw {
             ctx.fill(Path(ellipseIn: rect), with: .color(c))
         }
     }
-
-    /// 抹掉整条肢体的可见度加权的连线颜色（用于误差上色）
-    static func errorColor(a: Int, b: Int, per: [Int: CGFloat]) -> Color {
-        let ea = per[a], eb = per[b]
-        switch (ea, eb) {
-        case let (.some(x), .some(y)): return PoseMath.errColor((x + y) / 2)
-        case let (.some(x), .none): return PoseMath.errColor(x)
-        case let (.none, .some(y)): return PoseMath.errColor(y)
-        case (.none, .none): return Theme.dim.opacity(0.5)
-        }
-    }
 }
 
 // MARK: - 参考视频的骨架叠加层

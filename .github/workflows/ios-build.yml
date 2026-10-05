@@ -11,7 +11,10 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    # 不能用 macos-14：它正在退役（2026-11-02 彻底下线），
+    # 期间还有几段「brownout」预演窗口会直接让任务失败。
+    # macos-15 是当前稳定的 arm64 镜像，Xcode 16 + Homebrew 都齐。
+    runs-on: macos-15
     timeout-minutes: 45
 
     steps:
