@@ -81,28 +81,24 @@ git push  ───────────────────▶   自动�
 
 会弹出一个蓝色/黑色窗口，路径就停在这个文件夹。
 
-### 2.5 粘贴这两条命令
+### 2.5 推送
 
-一条一条粘贴，每条按回车。**`你的用户名` 要换成你自己的 GitHub 用户名**：
+远程地址已经设好了（指向 `github.com/Ggbond123abc/dance-coach-ios`），
+本地分支也已经是 `main`，所以只要**一条命令**：
 
 ```powershell
-git remote set-url origin https://github.com/你的用户名/dance-coach-ios.git
 git push -u origin main
 ```
 
-> ⚠️ 用 `set-url` 而不是 `add`：你这个文件夹里**已经预置了一个占位地址**
-> （`https://github.com/你的用户名/dance-coach-ios.git`），
-> 直接 `add` 会报 `remote origin already exists`。`set-url` 直接覆盖掉它。
->
-> 本地分支我已经改成 `main` 了，所以不用再 `git branch -M main`。
+> ⚠️ 会弹浏览器让你登录 GitHub 授权**一次**，之后 git 会记住，不用再登。
+> 屏幕上看不到弹窗时，检查任务栏有没有闪烁的浏览器图标。
 
-> ⚠️ 你电脑上的 git 全局身份现在是占位的「你的名字 / 你的邮箱」。
-> 想改成自己的，先跑这两条（换成你的名字和邮箱）：
+> 提交身份已经设成 `Ggbond123` / `3096972826@qq.com`，
+> 想改就在这个文件夹里跑：
 > ```powershell
-> git config user.name "你的名字"
-> git config user.email "你的邮箱"
+> git config user.name "新名字"
+> git config user.email "新邮箱"
 > ```
-> 不改也能推上去，只是提交记录里显示的是占位名。
 
 ### 2.6 第一次推送会弹登录窗口
 
