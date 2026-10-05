@@ -40,8 +40,9 @@ git push  ───────────────────▶   自动�
 | 东西 | 状态 |
 |---|---|
 | `git 2.56.0` | ✅ 已装 |
-| 项目代码 | ✅ 已提交（分支 `main`，还没有远程仓库） |
+| 项目代码 | ✅ 已提交（分支已改成 `main`） |
 | `winget v1.29` | ✅ 已装 → 所以下面能用命令一键装软件 |
+| git 远程地址 | ⚠️ 已预置一个**占位地址**，2.5 步要用你的地址覆盖它 |
 | iTunes / iPhone 驱动 | ❌ 没装（第四节装） |
 | Sideloadly | ❌ 没装（第四节装） |
 | 手机 | ❓ 需要你准备一根能传数据的线 |
@@ -80,15 +81,20 @@ git push  ───────────────────▶   自动�
 
 会弹出一个蓝色/黑色窗口，路径就停在这个文件夹。
 
-### 2.5 粘贴这三条命令
+### 2.5 粘贴这两条命令
 
-一条一条粘贴，每条按回车。**第一条里的 `你的用户名` 要换成你自己的**：
+一条一条粘贴，每条按回车。**`你的用户名` 要换成你自己的 GitHub 用户名**：
 
 ```powershell
-git remote add origin https://github.com/你的用户名/dance-coach-ios.git
-git branch -M main
+git remote set-url origin https://github.com/你的用户名/dance-coach-ios.git
 git push -u origin main
 ```
+
+> ⚠️ 用 `set-url` 而不是 `add`：你这个文件夹里**已经预置了一个占位地址**
+> （`https://github.com/你的用户名/dance-coach-ios.git`），
+> 直接 `add` 会报 `remote origin already exists`。`set-url` 直接覆盖掉它。
+>
+> 本地分支我已经改成 `main` 了，所以不用再 `git branch -M main`。
 
 > ⚠️ 你电脑上的 git 全局身份现在是占位的「你的名字 / 你的邮箱」。
 > 想改成自己的，先跑这两条（换成你的名字和邮箱）：
@@ -111,7 +117,7 @@ git push -u origin main
 <details>
 <summary>如果报错 <code>remote origin already exists</code></summary>
 
-说明之前加过了，改成：
+说明你用了 `add`。改成 `set-url` 再来一次：
 ```powershell
 git remote set-url origin https://github.com/你的用户名/dance-coach-ios.git
 git push -u origin main
@@ -159,6 +165,7 @@ https://github.com/你的用户名/dance-coach-ios/actions
    git commit -m "改了点什么"
    git push
    ```
+   （`git push` 不带参数即可，2.5 步的 `-u` 已经记住推哪儿了）
 2. GitHub 会自动重新编译（不用你点任何东西）
 3. 编译好之后**重新下载 ipa**，再用 Sideloadly 装一次覆盖掉旧的
 
