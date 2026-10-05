@@ -1,0 +1,46 @@
+name: DanceCoach
+options:
+  bundleIdPrefix: com.local
+  deploymentTarget:
+    iOS: "16.0"
+  createIntermediateGroups: true
+  groupSortPosition: top
+
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    SWIFT_STRICT_CONCURRENCY: minimal
+    ENABLE_USER_SCRIPT_SANDBOXING: "NO"
+    CODE_SIGN_STYLE: Automatic
+
+targets:
+  DanceCoach:
+    type: application
+    platform: iOS
+    sources:
+      - path: DanceCoach
+        excludes:
+          - "Info.plist"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.local.dancecoach
+        PRODUCT_NAME: DanceCoach
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        TARGETED_DEVICE_FAMILY: "1"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        ENABLE_BITCODE: "NO"
+    info:
+      path: DanceCoach/Info.plist
+      properties:
+        CFBundleDisplayName: 街舞拆解
+        CFBundleName: DanceCoach
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
+        UILaunchScreen: {}
+        UIRequiresFullScreen: false
+        UIStatusBarStyle: UIStatusBarStyleLightContent
+        UIViewControllerBasedStatusBarAppearance: false
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        NSCameraUsageDescription: "要用摄像头拍下你的动作，和参考动作实时比对并打分。画面只在本机处理，不会上传。"

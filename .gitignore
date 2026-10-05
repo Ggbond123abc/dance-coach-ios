@@ -1,0 +1,15 @@
+# Xcode / 构建产物
+build/
+DerivedData/
+*.xcuserdatad/
+xcuserdata/
+*.xcworkspace/xcuserdata/
+*.xcodeproj/xcuserdata/
+*.xcodeproj/project.xcworkspace/xcuserdata/
+
+# XcodeGen 生成的东西（由 project.yml 描述，不入库）
+DanceCoach.xcodeproj/
+DanceCoach/Info.plist
+
+# macOS
+.DS_Store

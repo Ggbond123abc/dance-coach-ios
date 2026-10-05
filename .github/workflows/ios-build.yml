@@ -1,0 +1,73 @@
+name: Build unsigned IPA
+
+# 在 GitHub 的 macOS 机器上编译，产出一个「未签名」的 .ipa。
+# 下载后用 Windows 上的 Sideloadly + 免费 Apple ID 签名装到 iPhone 上。
+# 全程不需要 Mac，也不需要 99 美元的开发者账号。
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    timeout-minutes: 45
+
+    steps:
+      - name: 拉取代码
+        uses: actions/checkout@v4
+
+      - name: 查看 Xcode 版本
+        run: xcodebuild -version
+
+      - name: 安装 XcodeGen
+        run: brew install xcodegen
+
+      - name: 生成 Xcode 工程
+        run: xcodegen generate
+
+      - name: 编译（不签名）
+        run: |
+          # 用 -target 而不是 -scheme：不依赖 Xcode 自动生成 scheme，更稳。
+          # CONFIGURATION_BUILD_DIR 写死，产物路径就不会飘。
+          xcodebuild \
+            -project DanceCoach.xcodeproj \
+            -target DanceCoach \
+            -configuration Release \
+            -sdk iphoneos \
+            CONFIGURATION_BUILD_DIR="$PWD/build/out" \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGN_ENTITLEMENTS="" \
+            build
+
+      - name: 打包成 .ipa
+        run: |
+          APP_DIR="build/out"
+          APP_PATH=$(find "$APP_DIR" -maxdepth 1 -name "*.app" | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            echo "::error::没找到 .app，编译大概失败了"
+            ls -la "$APP_DIR" || true
+            exit 1
+          fi
+          echo "找到 App: $APP_PATH"
+          rm -rf Payload DanceCoach.ipa
+          mkdir -p Payload
+          cp -R "$APP_PATH" Payload/
+          zip -qry DanceCoach.ipa Payload
+          echo "--- 产物 ---"
+          ls -lh DanceCoach.ipa
+          echo "--- Info.plist 摘要 ---"
+          /usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP_PATH/Info.plist" || true
+          /usr/libexec/PlistBuddy -c "Print :CFBundleDisplayName" "$APP_PATH/Info.plist" || true
+          /usr/libexec/PlistBuddy -c "Print :MinimumOSVersion" "$APP_PATH/Info.plist" || true
+
+      - name: 上传 ipa
+        uses: actions/upload-artifact@v4
+        with:
+          name: DanceCoach-unsigned-ipa
+          path: DanceCoach.ipa
+          if-no-files-found: error
+          retention-days: 30
