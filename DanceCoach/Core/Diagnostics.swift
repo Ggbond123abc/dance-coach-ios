@@ -38,10 +38,11 @@ enum Diagnostics {
         String(format: "%.\(digits)f", Double(v))
     }
 
-    static func analyze(seg: Segment, all frames: [PoseFrame], videoSize: CGSize) -> (items: [DiagItem], note: String) {
+    // 注意：内部参数名不能叫 `frames`，否则会遮住上面的静态方法 `frames(in:from:)`
+    static func analyze(seg: Segment, all allFrames: [PoseFrame], videoSize: CGSize) -> (items: [DiagItem], note: String) {
         let w = max(1, videoSize.width)
         let h = max(1, videoSize.height)
-        let fr = frames(in: seg, from: frames)
+        let fr = frames(in: seg, from: allFrames)
         guard fr.count >= 10 else {
             return ([], "这一段的有效骨架帧太少，给不出可靠提示。")
         }
